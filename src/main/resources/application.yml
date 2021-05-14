@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      database: supercontest
+      host: localhost
+#      password:
+      port: 27017
+#      username:
