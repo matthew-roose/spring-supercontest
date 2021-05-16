@@ -13,7 +13,7 @@ import java.util.List;
 public class WeekOfLines {
 
     @Id
-    private String weekNumber;
+    private int weekNumber;
     private List<GameLine> linesOfTheWeek;
 
 }

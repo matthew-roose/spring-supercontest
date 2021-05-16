@@ -24,7 +24,7 @@ public class ClientController {
     private final WeeklyLinesRepository weeklyLinesRepository;
 
     @GetMapping("/getLines/{weekNumber}")
-    public ResponseEntity<WeekOfLines> getWeekOfLines(@PathVariable("weekNumber") String weekNumber) {
+    public ResponseEntity<WeekOfLines> getWeekOfLines(@PathVariable("weekNumber") int weekNumber) {
         Optional<WeekOfLines> weekOfLines = weeklyLinesRepository.findById(weekNumber);
         return weekOfLines.map(week -> new ResponseEntity<>(week, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -43,7 +43,7 @@ public class ClientController {
     }
 
     @GetMapping("/getLines/{weekNumber}/{gameId}")
-    public ResponseEntity<GameLine> getSingleGameLine(@PathVariable("weekNumber") String weekNumber, @PathVariable("gameId") int gameId) {
+    public ResponseEntity<GameLine> getSingleGameLine(@PathVariable("weekNumber") int weekNumber, @PathVariable("gameId") int gameId) {
         Optional<WeekOfLines> weekOfLines = weeklyLinesRepository.findById(weekNumber);
         if (weekOfLines.isPresent()) {
             try {
