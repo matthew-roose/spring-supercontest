@@ -15,7 +15,7 @@ public class AdminController {
 
     private final WeeklyLinesRepository weeklyLinesRepository;
 
-    @PostMapping("/addLines")
+    @PostMapping("/postLines")
     public ResponseEntity<WeekOfLines> addWeekOfLines(@RequestBody() WeekOfLines weekOfLines) {
         try {
             return new ResponseEntity<>(weeklyLinesRepository.save(weekOfLines), HttpStatus.CREATED);

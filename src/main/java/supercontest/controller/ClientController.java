@@ -1,7 +1,6 @@
 package supercontest.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import supercontest.model.weeklylines.GameLine;
 import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.repository.WeeklyLinesRepository;
 
@@ -19,7 +19,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/")
 @AllArgsConstructor(onConstructor_ = {@Autowired})
-@Slf4j
 public class ClientController {
 
     private final WeeklyLinesRepository weeklyLinesRepository;
@@ -40,6 +39,21 @@ public class ClientController {
             return new ResponseEntity<>(allWeeksOfLines, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getLines/{weekNumber}/{gameId}")
+    public ResponseEntity<GameLine> getSingleGameLine(@PathVariable("weekNumber") String weekNumber, @PathVariable("gameId") int gameId) {
+        Optional<WeekOfLines> weekOfLines = weeklyLinesRepository.findById(weekNumber);
+        if (weekOfLines.isPresent()) {
+            try {
+                GameLine gameLine = weekOfLines.get().getLinesOfTheWeek().get(gameId - 1); // gameIds will start with 1 but index starts at 0
+                return new ResponseEntity<>(gameLine, HttpStatus.OK);
+            } catch (IndexOutOfBoundsException ex) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
