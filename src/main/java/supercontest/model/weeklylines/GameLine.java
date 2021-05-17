@@ -16,14 +16,6 @@ public class GameLine {
     private Integer homeTeamScore; // null until initialized after the game
     private Integer awayTeamScore; // null until initialized after the game
 
-    public GameLine(int gameId, Team homeTeam, Team awayTeam, float homeTeamHandicap, String gameTime) {
-        this.gameId = gameId;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.homeTeamHandicap = homeTeamHandicap;
-        this.gameTime = gameTime;
-    }
-
     public Result getResult(Team pickedTeam) {
         Result result;
         if (pickedTeam == homeTeam) {
