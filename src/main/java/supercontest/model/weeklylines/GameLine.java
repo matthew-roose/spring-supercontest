@@ -1,8 +1,10 @@
 package supercontest.model.weeklylines;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
+@Slf4j
 public class GameLine {
 
     // Before the game
@@ -15,14 +17,6 @@ public class GameLine {
     // After the game
     private Integer homeTeamScore; // null until initialized after the game
     private Integer awayTeamScore; // null until initialized after the game
-
-    public GameLine(int gameId, Team homeTeam, Team awayTeam, float homeTeamHandicap, String gameTime) {
-        this.gameId = gameId;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.homeTeamHandicap = homeTeamHandicap;
-        this.gameTime = gameTime;
-    }
 
     public Result getResult(Team pickedTeam) {
         Result result;
