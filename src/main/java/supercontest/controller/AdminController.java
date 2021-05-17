@@ -33,7 +33,7 @@ public class AdminController {
     }
 
     @PutMapping("/scoreGames/{weekNumber}")
-    public ResponseEntity<WeekOfLines> scoreWeekOfLines(@RequestBody List<ScoreUpdate> scoreUpdates, @PathVariable("weekNumber") Integer weekNumber) {
+    public ResponseEntity<WeekOfLines> scoreWeekOfLines(@RequestBody List<ScoreUpdate> scoreUpdates, @PathVariable("weekNumber") int weekNumber) {
         Optional<WeekOfLines> weekOfLinesOptional = weeklyLinesRepository.findById(weekNumber);
         if (weekOfLinesOptional.isPresent()) {
             WeekOfLines weekOfLines = weekOfLinesOptional.get();
