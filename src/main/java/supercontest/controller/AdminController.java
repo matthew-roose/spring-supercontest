@@ -12,6 +12,7 @@ import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.repository.PlayerRepository;
 import supercontest.repository.WeeklyLinesRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +45,24 @@ public class AdminController {
             }
             weeklyLinesRepository.save(weekOfLines);
             return new ResponseEntity<>(weekOfLines, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/scorePicks/{weekNumber}")
+    public ResponseEntity<List<Player>> scoreWeekOfPicks(@PathVariable("weekNumber") int weekNumber) {
+        List<Player> allPlayers = playerRepository.findAll();
+        Optional<WeekOfLines> weekOfLinesOptional = weeklyLinesRepository.findById(weekNumber);
+        if (weekOfLinesOptional.isPresent()) {
+            WeekOfLines weekOfLines = weekOfLinesOptional.get();
+            List<WeekOfLines> weekOfLinesList = new ArrayList<>();
+            weekOfLinesList.add(weekOfLines);
+            for (Player player : allPlayers) {
+                player.calculateSeasonScore(weekOfLinesList);
+            }
+            playerRepository.saveAll(allPlayers);
+            return new ResponseEntity<>(allPlayers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
