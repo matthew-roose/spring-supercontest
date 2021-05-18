@@ -21,12 +21,15 @@ public class Pick {
 
     // 1 for win, 0.5 for push, 0 for loss
     public float getPointsAwarded(GameLine gameLine) {
-        result = gameLine.getResult(pickedTeam);
-        if (result == Result.WIN) {
+        Team coveringTeam = gameLine.getCoveringTeam();
+        if (coveringTeam == pickedTeam) {
+            result = Result.WIN;
             return 1;
-        } else if (result == Result.PUSH) {
-            return 0.5f;
+        } else if (coveringTeam == null) {
+            result = Result.PUSH;
+            return .5f;
         } else {
+            result = Result.LOSS;
             return 0;
         }
     }
