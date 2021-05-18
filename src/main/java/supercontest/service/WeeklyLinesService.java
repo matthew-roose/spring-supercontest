@@ -19,9 +19,10 @@ public class WeeklyLinesService {
 
     private final WeeklyLinesRepository weeklyLinesRepository;
 
-    public ResponseEntity<WeekOfLines> addWeekOfLines(WeekOfLines weekOfLines) {
+    public ResponseEntity<WeekOfLines> addWeekOfLines(WeekOfLines weekOfLines, int weekNumber) {
         try {
-            return new ResponseEntity<>(weeklyLinesRepository.save(weekOfLines), HttpStatus.CREATED);
+            weekOfLines.setWeekNumber(weekNumber);
+            return new ResponseEntity<>(weeklyLinesRepository.save(weekOfLines), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

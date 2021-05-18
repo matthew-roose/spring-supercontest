@@ -16,7 +16,7 @@ public class GameLine {
     private Integer homeTeamScore; // null until initialized after the game
     private Integer awayTeamScore; // null until initialized after the game
 
-    public Team getCoveringTeam() {
+    public Team calculateCoveringTeam() {
         float homeTeamAdjustedScore = homeTeamScore + homeTeamHandicap;
         if (homeTeamAdjustedScore > awayTeamScore) {
             return homeTeam;

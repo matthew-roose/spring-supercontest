@@ -20,9 +20,10 @@ public class AdminController {
     private final PlayerService playerService;
     private final WeeklyLinesService weeklyLinesService;
 
-    @PostMapping("/postLines")
-    public ResponseEntity<WeekOfLines> addWeekOfLines(@RequestBody WeekOfLines weekOfLines) {
-        return weeklyLinesService.addWeekOfLines(weekOfLines);
+    @PostMapping("/postLines/{weekNumber}")
+    public ResponseEntity<WeekOfLines> addWeekOfLines(@RequestBody WeekOfLines weekOfLines,
+                                                      @PathVariable("weekNumber") int weekNumber) {
+        return weeklyLinesService.addWeekOfLines(weekOfLines, weekNumber);
     }
 
     @PutMapping("/scoreGames/{weekNumber}")

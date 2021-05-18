@@ -12,7 +12,6 @@ import supercontest.model.wrapper.PlayerAndPicks;
 import supercontest.repository.PlayerRepository;
 import supercontest.repository.WeeklyLinesRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +24,7 @@ public class PlayerService {
 
     public ResponseEntity<Player> registerPlayer(Player player) {
         try {
-            return new ResponseEntity<>(playerRepository.save(player), HttpStatus.CREATED);
+            return new ResponseEntity<>(playerRepository.save(player), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -48,7 +47,7 @@ public class PlayerService {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             playerRepository.save(player);
-            return new ResponseEntity<>(player, HttpStatus.CREATED);
+            return new ResponseEntity<>(player, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -67,18 +66,14 @@ public class PlayerService {
 
     public ResponseEntity<List<Player>> scoreWeekOfPicks(int weekNumber) {
         List<Player> allPlayers = playerRepository.findAll();
-        Optional<WeekOfLines> weekOfLinesOptional = weeklyLinesRepository.findById(weekNumber);
-        if (weekOfLinesOptional.isPresent()) {
-            WeekOfLines weekOfLines = weekOfLinesOptional.get();
-            List<WeekOfLines> weekOfLinesList = new ArrayList<>();
-            weekOfLinesList.add(weekOfLines);
-            for (Player player : allPlayers) {
-                player.calculateSeasonScore(weekOfLinesList);
+        List<WeekOfLines> allWeeksOfLines = weeklyLinesRepository.findAll();
+        for (Player player : allPlayers) {
+            if (player.getAllPicks().size() < weekNumber) {
+                player.getAllPicks().add(new WeekOfPicks(weekNumber));
             }
-            playerRepository.saveAll(allPlayers);
-            return new ResponseEntity<>(allPlayers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            player.calculateSeasonScore(allWeeksOfLines);
         }
+        playerRepository.saveAll(allPlayers);
+        return new ResponseEntity<>(allPlayers, HttpStatus.OK);
     }
 }

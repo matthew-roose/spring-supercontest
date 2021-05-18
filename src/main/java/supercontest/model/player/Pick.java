@@ -21,7 +21,7 @@ public class Pick {
 
     // 1 for win, 0.5 for push, 0 for loss
     public float getPointsAwarded(GameLine gameLine) {
-        Team coveringTeam = gameLine.getCoveringTeam();
+        Team coveringTeam = gameLine.calculateCoveringTeam();
         if (coveringTeam == pickedTeam) {
             result = Result.WIN;
             return 1;
