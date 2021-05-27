@@ -33,10 +33,10 @@ public class WeekOfPicks {
 
     public float calculateWeeklyScore(WeekOfLines weekOfLines) {
         weeklyScore = 0;
-        for (Pick pick : picks) {
+        picks.forEach(pick -> {
             GameLine gameLine = weekOfLines.getLinesOfTheWeek().get(pick.getGameId() - 1);
             weeklyScore += pick.getPointsAwarded(gameLine);
-        }
+        });
         return weeklyScore;
     }
 }

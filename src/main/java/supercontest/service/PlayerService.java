@@ -2,8 +2,6 @@ package supercontest.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import supercontest.model.player.Player;
 import supercontest.model.player.WeekOfPicks;
@@ -22,15 +20,11 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final WeeklyLinesRepository weeklyLinesRepository;
 
-    public ResponseEntity<Player> registerPlayer(Player player) {
-        try {
-            return new ResponseEntity<>(playerRepository.save(player), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public Player registerPlayer(Player player) {
+        return playerRepository.save(player);
     }
 
-    public ResponseEntity<Player> submitPicks(PlayerAndPicks playerAndPicks) {
+    public Player submitPicks(PlayerAndPicks playerAndPicks) {
         WeekOfPicks weekOfPicks = playerAndPicks.getWeekOfPicks();
         Optional<Player> playerOptional = playerRepository.findById(playerAndPicks.getPlayerId());
         if (playerOptional.isPresent()) {
@@ -44,36 +38,35 @@ public class PlayerService {
                 allPicks.set(weekOfPicks.getWeekNumber() - 1, weekOfPicks);
             } else {
                 // invalid week
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return null;
             }
-            playerRepository.save(player);
-            return new ResponseEntity<>(player, HttpStatus.OK);
+            return playerRepository.save(player);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            // player with provided ID not found
+            return null;
         }
     }
 
-    public ResponseEntity<WeekOfPicks> getWeekOfPicks(int playerId, int weekNumber) {
+    public WeekOfPicks getWeekOfPicks(int playerId, int weekNumber) {
         Optional<Player> playerOptional = playerRepository.findById(playerId);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
-            WeekOfPicks weekOfPicks = player.getAllPicks().get(weekNumber - 1);
-            return new ResponseEntity<>(weekOfPicks, HttpStatus.OK);
+            return player.getAllPicks().get(weekNumber - 1);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            // playerId or weekNumber invalid
+            return null;
         }
     }
 
-    public ResponseEntity<List<Player>> scoreWeekOfPicks(int weekNumber) {
+    public List<Player> scoreAllPicks(int weekNumber) {
         List<Player> allPlayers = playerRepository.findAll();
         List<WeekOfLines> allWeeksOfLines = weeklyLinesRepository.findAll();
-        for (Player player : allPlayers) {
+        allPlayers.forEach(player -> {
             if (player.getAllPicks().size() < weekNumber) {
                 player.getAllPicks().add(new WeekOfPicks(weekNumber));
             }
             player.calculateSeasonScore(allWeeksOfLines);
-        }
-        playerRepository.saveAll(allPlayers);
-        return new ResponseEntity<>(allPlayers, HttpStatus.OK);
+        });
+        return playerRepository.saveAll(allPlayers);
     }
 }

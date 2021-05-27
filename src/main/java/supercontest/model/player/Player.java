@@ -29,9 +29,8 @@ public class Player {
 
     public void calculateSeasonScore(List<WeekOfLines> allWeeksOfLines) {
         seasonScore = 0;
-        for (WeekOfPicks weekOfPicks : allPicks) {
-            seasonScore += weekOfPicks.calculateWeeklyScore(allWeeksOfLines.get(weekOfPicks.getWeekNumber() - 1));
-        }
+        allPicks.forEach(weekOfPicks ->
+                seasonScore += weekOfPicks.calculateWeeklyScore(allWeeksOfLines.get(weekOfPicks.getWeekNumber() - 1)));
     }
 
 }

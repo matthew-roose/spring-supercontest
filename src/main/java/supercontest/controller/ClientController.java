@@ -2,6 +2,7 @@ package supercontest.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import supercontest.model.player.Player;
@@ -21,22 +22,56 @@ public class ClientController {
 
     @PostMapping("/register")
     public ResponseEntity<Player> registerPlayer(@RequestBody Player player) {
-        return playerService.registerPlayer(player);
+        try {
+            Player registeredPlayer = playerService.registerPlayer(player);
+            return new ResponseEntity<>(registeredPlayer, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/submitPicks")
     public ResponseEntity<Player> submitPicks(@RequestBody PlayerAndPicks playerAndPicks) {
-        return playerService.submitPicks(playerAndPicks);
+        try {
+            Player playerWhoSubmittedPicks = playerService.submitPicks(playerAndPicks);
+            if (playerWhoSubmittedPicks != null) {
+                return new ResponseEntity<>(playerWhoSubmittedPicks, HttpStatus.OK);
+            } else {
+                // invalid playerId or weekNumber
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/getPicks/{weekNumber}")
     public ResponseEntity<WeekOfPicks> getWeekOfPicks(@RequestBody int playerId,
                                                       @PathVariable("weekNumber") int weekNumber) {
-        return playerService.getWeekOfPicks(playerId, weekNumber);
+        try {
+            WeekOfPicks weekOfPicks = playerService.getWeekOfPicks(playerId, weekNumber);
+            if (weekOfPicks != null) {
+                return new ResponseEntity<>(weekOfPicks, HttpStatus.OK);
+            } else {
+                // invalid playerId or weekNumber
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/getLines/{weekNumber}")
     public ResponseEntity<WeekOfLines> getWeekOfLines(@PathVariable("weekNumber") int weekNumber) {
-        return weeklyLinesService.getWeekOfLines(weekNumber);
+        try {
+            WeekOfLines weekOfLines = weeklyLinesService.getWeekOfLines(weekNumber);
+            if (weekOfLines != null) {
+                return new ResponseEntity<>(weekOfLines, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

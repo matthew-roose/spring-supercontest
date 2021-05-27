@@ -2,8 +2,6 @@ package supercontest.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import supercontest.model.weeklylines.GameLine;
 import supercontest.model.weeklylines.ScoreUpdate;
@@ -19,34 +17,28 @@ public class WeeklyLinesService {
 
     private final WeeklyLinesRepository weeklyLinesRepository;
 
-    public ResponseEntity<WeekOfLines> addWeekOfLines(WeekOfLines weekOfLines, int weekNumber) {
-        try {
-            weekOfLines.setWeekNumber(weekNumber);
-            return new ResponseEntity<>(weeklyLinesRepository.save(weekOfLines), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public WeekOfLines addWeekOfLines(WeekOfLines weekOfLines, int weekNumber) {
+        weekOfLines.setWeekNumber(weekNumber);
+        return weeklyLinesRepository.save(weekOfLines);
     }
 
-    public ResponseEntity<WeekOfLines> getWeekOfLines(int weekNumber) {
-        Optional<WeekOfLines> weekOfLines = weeklyLinesRepository.findById(weekNumber);
-        return weekOfLines.map(week ->
-                new ResponseEntity<>(week, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public WeekOfLines getWeekOfLines(int weekNumber) {
+        Optional<WeekOfLines> weekOfLinesOptional = weeklyLinesRepository.findById(weekNumber);
+        return weekOfLinesOptional.orElse(null);
     }
 
-    public ResponseEntity<WeekOfLines> scoreWeekOfLines(List<ScoreUpdate> scoreUpdates, int weekNumber) {
+    public WeekOfLines scoreWeekOfLines(List<ScoreUpdate> scoreUpdates, int weekNumber) {
         Optional<WeekOfLines> weekOfLinesOptional = weeklyLinesRepository.findById(weekNumber);
         if (weekOfLinesOptional.isPresent()) {
             WeekOfLines weekOfLines = weekOfLinesOptional.get();
-            for (ScoreUpdate scoreUpdate : scoreUpdates) {
+            scoreUpdates.forEach(scoreUpdate -> {
                 GameLine gameLine = weekOfLines.getLinesOfTheWeek().get(scoreUpdate.getGameId() - 1);
                 gameLine.setHomeTeamScore(scoreUpdate.getHomeTeamScore());
                 gameLine.setAwayTeamScore(scoreUpdate.getAwayTeamScore());
-            }
-            weeklyLinesRepository.save(weekOfLines);
-            return new ResponseEntity<>(weekOfLines, HttpStatus.OK);
+            });
+            return weeklyLinesRepository.save(weekOfLines);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return null;
         }
     }
 
