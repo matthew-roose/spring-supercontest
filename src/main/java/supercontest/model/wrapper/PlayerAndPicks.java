@@ -1,13 +1,12 @@
 package supercontest.model.wrapper;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import supercontest.model.player.WeekOfPicks;
 
-@Data
-@AllArgsConstructor
-public class PlayerAndPicks {
+import java.util.UUID;
 
-    private int playerId;
+@Data
+public class PlayerAndPicks {
+    private UUID loginToken;
     private WeekOfPicks weekOfPicks;
 }

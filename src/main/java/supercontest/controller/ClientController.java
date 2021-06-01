@@ -9,8 +9,11 @@ import supercontest.model.player.Player;
 import supercontest.model.player.WeekOfPicks;
 import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.model.wrapper.PlayerAndPicks;
+import supercontest.model.wrapper.UsernameAndPassword;
 import supercontest.service.PlayerService;
 import supercontest.service.WeeklyLinesService;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/")
@@ -24,7 +27,29 @@ public class ClientController {
     public ResponseEntity<Player> registerPlayer(@RequestBody Player player) {
         try {
             Player registeredPlayer = playerService.registerPlayer(player);
-            return new ResponseEntity<>(registeredPlayer, HttpStatus.OK);
+            if (registeredPlayer != null) {
+                return new ResponseEntity<>(registeredPlayer, HttpStatus.OK);
+            } else {
+                // username is already taken
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<Player> login(@RequestBody UsernameAndPassword usernameAndPassword) {
+        try {
+            String username = usernameAndPassword.getUsername();
+            String password = usernameAndPassword.getPassword();
+            Player loggedInPlayer = playerService.login(username, password);
+            if (loggedInPlayer != null) {
+                return new ResponseEntity<>(loggedInPlayer, HttpStatus.OK);
+            } else {
+                // invalid username or password
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,7 +71,7 @@ public class ClientController {
     }
 
     @GetMapping("/getPicks/{weekNumber}")
-    public ResponseEntity<WeekOfPicks> getWeekOfPicks(@RequestBody int playerId,
+    public ResponseEntity<WeekOfPicks> getWeekOfPicks(@RequestBody UUID playerId,
                                                       @PathVariable("weekNumber") int weekNumber) {
         try {
             WeekOfPicks weekOfPicks = playerService.getWeekOfPicks(playerId, weekNumber);
