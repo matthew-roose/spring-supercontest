@@ -1,6 +1,8 @@
 package supercontest.model.player;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import supercontest.model.weeklylines.WeekOfLines;
 
 import java.util.ArrayList;
@@ -8,11 +10,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@Document(collection = "players")
 public class Player {
-
-    private UUID loginToken;
+    @Id
     private String username;
     private String password;
+    private UUID loginToken;
     private String firstName;
     private String lastName;
     private List<WeekOfPicks> allPicks;
