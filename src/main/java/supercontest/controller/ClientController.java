@@ -10,9 +10,11 @@ import supercontest.model.player.WeekOfPicks;
 import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.model.wrapper.PlayerAndPicks;
 import supercontest.model.wrapper.UsernameAndPassword;
+import supercontest.service.LeaderboardService;
 import supercontest.service.PlayerService;
 import supercontest.service.WeeklyLinesService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,6 +22,7 @@ import java.util.UUID;
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class ClientController {
 
+    private final LeaderboardService leaderboardService;
     private final PlayerService playerService;
     private final WeeklyLinesService weeklyLinesService;
 
@@ -95,6 +98,29 @@ public class ClientController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getOverallLeaderboard")
+    public ResponseEntity<List<Player>> getOverallLeaderboard() {
+        try {
+            List<Player> overallLeaderboard = leaderboardService.getOverallLeaderboard();
+            return new ResponseEntity<>(overallLeaderboard, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getWeeklyLeaderboard/{weekNumber}")
+    public ResponseEntity<List<Player>> getWeeklyLeaderboard(@PathVariable("weekNumber") int weekNumber) {
+        try {
+            List<Player> weeklyLeaderboard = leaderboardService.getWeeklyLeaderboard(weekNumber);
+            return new ResponseEntity<>(weeklyLeaderboard, HttpStatus.OK);
+        } catch (IndexOutOfBoundsException e) {
+            // leaderboard not available for this week yet
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
