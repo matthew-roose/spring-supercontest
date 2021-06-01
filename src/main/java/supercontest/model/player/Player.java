@@ -1,6 +1,5 @@
 package supercontest.model.player;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,14 +7,15 @@ import supercontest.model.weeklylines.WeekOfLines;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Document(collection = "players")
-@AllArgsConstructor
 public class Player {
-
     @Id
-    private int playerId;
+    private String username;
+    private String password;
+    private UUID loginToken;
     private String firstName;
     private String lastName;
     private List<WeekOfPicks> allPicks;
@@ -23,6 +23,7 @@ public class Player {
 
     // Register player - used by Jackson
     public Player() {
+        this.loginToken = UUID.randomUUID();
         this.allPicks = new ArrayList<>();
         this.seasonScore = 0;
     }

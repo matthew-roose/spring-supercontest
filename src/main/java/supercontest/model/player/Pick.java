@@ -1,15 +1,11 @@
 package supercontest.model.player;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import supercontest.model.weeklylines.GameLine;
 import supercontest.model.weeklylines.Result;
 import supercontest.model.weeklylines.Team;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Pick {
 
     // When submitting the pick

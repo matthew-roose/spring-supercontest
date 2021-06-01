@@ -1,6 +1,5 @@
 package supercontest.model.player;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import supercontest.model.weeklylines.GameLine;
 import supercontest.model.weeklylines.WeekOfLines;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 public class WeekOfPicks {
 
     // When submitting picks
