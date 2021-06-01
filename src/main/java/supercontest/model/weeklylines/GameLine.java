@@ -16,27 +16,14 @@ public class GameLine {
     private Integer homeTeamScore; // null until initialized after the game
     private Integer awayTeamScore; // null until initialized after the game
 
-    public Result getResult(Team pickedTeam) {
-        Result result;
-        if (pickedTeam == homeTeam) {
-            if (homeTeamScore + homeTeamHandicap > awayTeamScore) {
-                result = Result.WIN;
-            } else if (awayTeamScore > homeTeamScore + homeTeamHandicap) {
-                result = Result.LOSS;
-            } else {
-                result = Result.PUSH;
-            }
-        } else if (pickedTeam == awayTeam){
-            if (awayTeamScore > homeTeamScore + homeTeamHandicap) {
-                result = Result.WIN;
-            } else if (homeTeamScore + homeTeamHandicap > awayTeamScore) {
-                result = Result.LOSS;
-            } else {
-                result = Result.PUSH;
-            }
+    public Team calculateCoveringTeam() {
+        float homeTeamAdjustedScore = homeTeamScore + homeTeamHandicap;
+        if (homeTeamAdjustedScore > awayTeamScore) {
+            return homeTeam;
+        } else if (homeTeamAdjustedScore < awayTeamScore) {
+            return awayTeam;
         } else {
-            result = null; // pickedTeam wasn't playing in this game
+            return null; // represents push
         }
-        return result;
     }
 }

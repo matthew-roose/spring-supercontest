@@ -32,5 +32,5 @@ public enum Team {
     Seattle_Seahawks,
     Tampa_Bay_Buccaneers,
     Tennessee_Titans,
-    Washington_Redskins
+    Washington_Football_Team
 }
