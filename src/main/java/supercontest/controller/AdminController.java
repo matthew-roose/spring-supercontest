@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import supercontest.model.player.Player;
 import supercontest.model.weeklylines.ScoreUpdate;
 import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.service.PlayerService;
@@ -32,22 +31,13 @@ public class AdminController {
         }
     }
 
-    @PutMapping("/scoreGames/{weekNumber}")
-    public ResponseEntity<WeekOfLines> scoreWeekOfLines(@RequestBody List<ScoreUpdate> scoreUpdates,
-                                                        @PathVariable("weekNumber") int weekNumber) {
+    @PutMapping("scoreGamesAndPicks/{weekNumber}")
+    public ResponseEntity<WeekOfLines> scoreWeekOfLinesAndPicks(@RequestBody List<ScoreUpdate> scoreUpdates,
+                                                                @PathVariable("weekNumber") int weekNumber) {
         try {
             WeekOfLines weekOfLines = weeklyLinesService.scoreWeekOfLines(scoreUpdates, weekNumber);
+            playerService.scoreAllPicks(weekNumber);
             return new ResponseEntity<>(weekOfLines, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PutMapping("/scorePicks/{weekNumber}")
-    public ResponseEntity<List<Player>> scoreWeekOfPicks(@PathVariable("weekNumber") int weekNumber) {
-        try {
-            List<Player> allPlayers = playerService.scoreAllPicks(weekNumber);
-            return new ResponseEntity<>(allPlayers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
