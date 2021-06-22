@@ -11,6 +11,7 @@ public class Pick {
     // When submitting the pick
     private int gameId;
     private Team pickedTeam;
+    private String gameTime;
 
     // After the game
     private Result result;

@@ -86,7 +86,7 @@ public class PlayerService {
         }
     }
 
-    public List<Player> scoreAllPicks(int weekNumber) {
+    public void scoreAllPicks(int weekNumber) {
         List<Player> allPlayers = playerRepository.findAll();
         List<WeekOfLines> allWeeksOfLines = weeklyLinesRepository.findAll();
         allPlayers.forEach(player -> {
@@ -95,6 +95,6 @@ public class PlayerService {
             }
             player.calculateSeasonScore(allWeeksOfLines);
         });
-        return playerRepository.saveAll(allPlayers);
+        playerRepository.saveAll(allPlayers);
     }
 }
