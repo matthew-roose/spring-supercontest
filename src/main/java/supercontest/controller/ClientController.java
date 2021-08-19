@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class ClientController {
 
@@ -41,7 +41,7 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<Player> login(@RequestBody UsernameAndPassword usernameAndPassword) {
         try {
             String username = usernameAndPassword.getUsername();
