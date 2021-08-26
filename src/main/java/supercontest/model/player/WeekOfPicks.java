@@ -34,6 +34,8 @@ public class WeekOfPicks {
         picks.forEach(pick -> {
             GameLine gameLine = weekOfLines.getLinesOfTheWeek().get(pick.getGameId() - 1);
             if (gameLine.getHomeTeamScore() != null) {
+                pick.setHomeTeamScore(gameLine.getHomeTeamScore());
+                pick.setAwayTeamScore(gameLine.getAwayTeamScore());
                 weeklyScore += pick.getPointsAwarded(gameLine);
             }
         });

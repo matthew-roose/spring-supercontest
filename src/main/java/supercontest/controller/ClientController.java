@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.*;
 import supercontest.model.player.Player;
 import supercontest.model.player.WeekOfPicks;
 import supercontest.model.weeklylines.WeekOfLines;
-import supercontest.model.wrapper.PlayerAndPicks;
 import supercontest.model.wrapper.UsernameAndPassword;
 import supercontest.service.LeaderboardService;
 import supercontest.service.PlayerService;
 import supercontest.service.WeeklyLinesService;
 
+import javax.ws.rs.QueryParam;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/")
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class ClientController {
 
@@ -59,9 +59,10 @@ public class ClientController {
     }
 
     @PostMapping("/submitPicks")
-    public ResponseEntity<Player> submitPicks(@RequestBody PlayerAndPicks playerAndPicks) {
+    public ResponseEntity<Player> submitPicks(@RequestHeader("Login-Token") String loginToken,
+                                              @RequestBody WeekOfPicks weekOfPicks) {
         try {
-            Player playerWhoSubmittedPicks = playerService.submitPicks(playerAndPicks);
+            Player playerWhoSubmittedPicks = playerService.submitPicks(loginToken, weekOfPicks);
             if (playerWhoSubmittedPicks != null) {
                 return new ResponseEntity<>(playerWhoSubmittedPicks, HttpStatus.OK);
             } else {
@@ -73,11 +74,12 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/getPicks/{weekNumber}")
-    public ResponseEntity<WeekOfPicks> getWeekOfPicks(@RequestBody UUID playerId,
-                                                      @PathVariable("weekNumber") int weekNumber) {
+    @GetMapping("/getPicks/{username}")
+    public ResponseEntity<WeekOfPicks> getWeekOfPicks(@RequestHeader("Login-Token") String loginToken,
+                                                      @PathVariable("username") String username,
+                                                      @QueryParam("weekNumber") int weekNumber) {
         try {
-            WeekOfPicks weekOfPicks = playerService.getWeekOfPicks(playerId, weekNumber);
+            WeekOfPicks weekOfPicks = playerService.getWeekOfPicks(loginToken, weekNumber);
             if (weekOfPicks != null) {
                 return new ResponseEntity<>(weekOfPicks, HttpStatus.OK);
             } else {

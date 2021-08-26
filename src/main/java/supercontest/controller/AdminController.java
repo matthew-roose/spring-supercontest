@@ -13,6 +13,7 @@ import supercontest.service.WeeklyLinesService;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/admin")
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class AdminController {

@@ -6,11 +6,10 @@ import supercontest.model.player.Player;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public interface PlayerRepository extends MongoRepository<Player, String> {
-    Optional<Player> findByLoginToken(UUID loginToken);
+    Optional<Player> findByLoginToken(String loginToken);
     Optional<Player> findByUsername(String username);
 
     default List<Player> findAllOrderBySeasonScore() {

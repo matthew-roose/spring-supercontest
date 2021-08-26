@@ -11,9 +11,14 @@ public class Pick {
     // When submitting the pick
     private int gameId;
     private Team pickedTeam;
+    private Team homeTeam; // only used by UI
+    private Team awayTeam; // only used by UI
+    private float homeTeamHandicap; // only used by UI // positive if underdog, negative if favored
     private String gameTime;
 
-    // After the game
+    // After the game - used by UI
+    private Integer homeTeamScore; // set by corresponding GameLine when scores are uploaded
+    private Integer awayTeamScore; // set by corresponding GameLine when scores are uploaded
     private Result result;
 
     // 1 for win, 0.5 for push, 0 for loss

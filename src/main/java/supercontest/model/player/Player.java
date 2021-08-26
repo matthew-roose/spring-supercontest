@@ -15,7 +15,7 @@ public class Player {
     @Id
     private String username;
     private String password;
-    private UUID loginToken;
+    private String loginToken;
     private String firstName;
     private String lastName;
     private List<WeekOfPicks> allPicks;
@@ -23,7 +23,7 @@ public class Player {
 
     // Register player - used by Jackson
     public Player() {
-        this.loginToken = UUID.randomUUID();
+        this.loginToken = UUID.randomUUID().toString();
         this.allPicks = new ArrayList<>();
         this.seasonScore = 0;
     }

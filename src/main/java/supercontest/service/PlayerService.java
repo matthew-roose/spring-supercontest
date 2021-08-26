@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import supercontest.model.player.Player;
 import supercontest.model.player.WeekOfPicks;
 import supercontest.model.weeklylines.WeekOfLines;
-import supercontest.model.wrapper.PlayerAndPicks;
 import supercontest.repository.PlayerRepository;
 import supercontest.repository.WeeklyLinesRepository;
 
@@ -38,7 +37,7 @@ public class PlayerService {
             Player player = playerOptional.get();
             if (player.getPassword().equals(password)) {
                 // set new login token
-                player.setLoginToken(UUID.randomUUID());
+                player.setLoginToken(UUID.randomUUID().toString());
                 playerRepository.save(player);
                 // client will use the UUID in subsequent calls
                 return player;
@@ -52,9 +51,8 @@ public class PlayerService {
         }
     }
 
-    public Player submitPicks(PlayerAndPicks playerAndPicks) {
-        WeekOfPicks weekOfPicks = playerAndPicks.getWeekOfPicks();
-        Optional<Player> playerOptional = playerRepository.findByLoginToken(playerAndPicks.getLoginToken());
+    public Player submitPicks(String loginToken, WeekOfPicks weekOfPicks) {
+        Optional<Player> playerOptional = playerRepository.findByLoginToken(loginToken);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             List<WeekOfPicks> allPicks = player.getAllPicks();
@@ -75,13 +73,18 @@ public class PlayerService {
         }
     }
 
-    public WeekOfPicks getWeekOfPicks(UUID loginToken, int weekNumber) {
+    public WeekOfPicks getWeekOfPicks(String loginToken, int weekNumber) {
         Optional<Player> playerOptional = playerRepository.findByLoginToken(loginToken);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
-            return player.getAllPicks().get(weekNumber - 1);
+            if (player.getAllPicks().size() < weekNumber) {
+                // no picks yet
+                return new WeekOfPicks(weekNumber);
+            } else {
+                return player.getAllPicks().get(weekNumber - 1);
+            }
         } else {
-            // playerId or weekNumber invalid
+            // playerId invalid
             return null;
         }
     }
