@@ -8,6 +8,7 @@ import supercontest.model.weeklylines.ScoreUpdate;
 import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.repository.WeeklyLinesRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,19 @@ public class WeeklyLinesService {
     public WeekOfLines addWeekOfLines(WeekOfLines weekOfLines, int weekNumber) {
         weekOfLines.setWeekNumber(weekNumber);
         return weeklyLinesRepository.save(weekOfLines);
+    }
+
+    public List<Integer> getAllWeekNumbersSoFar() {
+        int mostRecentWeekNumber = weeklyLinesRepository.findAll().size();
+        List<Integer> allWeekNumbersSoFar = new ArrayList<>();
+        for (int i = 1; i <= mostRecentWeekNumber; i++) {
+            allWeekNumbersSoFar.add(i);
+        }
+        return allWeekNumbersSoFar;
+    }
+
+    public Integer getCurrentWeekNumber() {
+        return weeklyLinesRepository.findAll().size();
     }
 
     public WeekOfLines getWeekOfLines(int weekNumber) {

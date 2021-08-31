@@ -74,13 +74,47 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/getAllWeekNumbersSoFar")
+    public ResponseEntity<List<Integer>> getAllWeekNumbersSoFar() {
+        try {
+            List<Integer> allWeekNumbersSoFar = weeklyLinesService.getAllWeekNumbersSoFar();
+            return new ResponseEntity<>(allWeekNumbersSoFar, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getCurrentWeekNumber")
+    public ResponseEntity<Integer> getCurrentWeekNumber() {
+        try {
+            int currentWeekNumber = weeklyLinesService.getCurrentWeekNumber();
+            return new ResponseEntity<>(currentWeekNumber, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/getPicks/{username}")
     public ResponseEntity<WeekOfPicks> getWeekOfPicks(@RequestHeader("Login-Token") String loginToken,
                                                       @PathVariable("username") String username,
                                                       @QueryParam("weekNumber") int weekNumber) {
         try {
-            WeekOfPicks weekOfPicks = playerService.getWeekOfPicks(loginToken, weekNumber);
+            WeekOfPicks weekOfPicks = playerService.getWeekOfPicks(username, weekNumber);
             if (weekOfPicks != null) {
+                boolean loginTokenMatchesUsername = playerService.authenticate(loginToken, username);
+                if (!loginTokenMatchesUsername) {
+                    // clean picks that haven't been graded yet
+                    weekOfPicks.getPicks().forEach(pick -> {
+                        if (pick.getResult() == null) {
+                            pick.setGameId(0);
+                            pick.setPickedTeam(null);
+                            pick.setHomeTeam(null);
+                            pick.setAwayTeam(null);
+                            pick.setHomeTeamHandicap(0);
+                            pick.setGameTime(null);
+                        }
+                    });
+                }
                 return new ResponseEntity<>(weekOfPicks, HttpStatus.OK);
             } else {
                 // invalid playerId or weekNumber
@@ -105,10 +139,10 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/getOverallLeaderboard")
-    public ResponseEntity<List<Player>> getOverallLeaderboard() {
+    @GetMapping("/getSeasonLeaderboard")
+    public ResponseEntity<List<Player>> getSeasonLeaderboard() {
         try {
-            List<Player> overallLeaderboard = leaderboardService.getOverallLeaderboard();
+            List<Player> overallLeaderboard = leaderboardService.getSeasonLeaderboard();
             return new ResponseEntity<>(overallLeaderboard, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

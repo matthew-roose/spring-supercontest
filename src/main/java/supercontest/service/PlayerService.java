@@ -3,12 +3,15 @@ package supercontest.service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import supercontest.model.player.Pick;
 import supercontest.model.player.Player;
 import supercontest.model.player.WeekOfPicks;
+import supercontest.model.weeklylines.GameLine;
 import supercontest.model.weeklylines.WeekOfLines;
 import supercontest.repository.PlayerRepository;
 import supercontest.repository.WeeklyLinesRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +29,11 @@ public class PlayerService {
             // username is taken
             return null; // or throw exception?
         } else {
+            int numberOfWeeksAlreadyPlayed = weeklyLinesRepository.findAll().size();
+            // catch the player up if they are joining during the season
+            for (int i = 1; i <= numberOfWeeksAlreadyPlayed; i++) {
+                player.getAllPicks().add(new WeekOfPicks(i));
+            }
             // safe to save using this username
             return playerRepository.save(player);
         }
@@ -55,17 +63,20 @@ public class PlayerService {
         Optional<Player> playerOptional = playerRepository.findByLoginToken(loginToken);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
-            List<WeekOfPicks> allPicks = player.getAllPicks();
-            if (allPicks.size() == weekOfPicks.getWeekNumber() - 1) {
-                // making picks for this week for the first time
-                allPicks.add(weekOfPicks);
-            } else if (allPicks.size() == weekOfPicks.getWeekNumber()) {
-                // changing picks for the current week
-                allPicks.set(weekOfPicks.getWeekNumber() - 1, weekOfPicks);
-            } else {
-                // invalid week
-                return null;
+            int weekNumberIndex = weekOfPicks.getWeekNumber() - 1;
+            List<Pick> currentListOfPicks = player.getAllPicks().get(weekNumberIndex).getPicks();
+            List<GameLine> officialGameLines = weeklyLinesRepository.findAll().get(weekNumberIndex).getLinesOfTheWeek();
+            for (Pick pick : weekOfPicks.getPicks()) {
+                long gameTime = officialGameLines.get(pick.getGameId() - 1).getGameTime();
+                // don't submit picks if any pick is expired AND NOT already submitted
+                if (gameTime < Instant.now().toEpochMilli() &&
+                        currentListOfPicks.stream().noneMatch(
+                                existingPick -> existingPick.getGameId() == pick.getGameId())) {
+                    return null;
+                }
             }
+            List<WeekOfPicks> allPicks = player.getAllPicks();
+            allPicks.set(weekNumberIndex, weekOfPicks);
             return playerRepository.save(player);
         } else {
             // player with provided ID not found
@@ -73,8 +84,8 @@ public class PlayerService {
         }
     }
 
-    public WeekOfPicks getWeekOfPicks(String loginToken, int weekNumber) {
-        Optional<Player> playerOptional = playerRepository.findByLoginToken(loginToken);
+    public WeekOfPicks getWeekOfPicks(String username, int weekNumber) {
+        Optional<Player> playerOptional = playerRepository.findByUsername(username);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
             if (player.getAllPicks().size() < weekNumber) {
@@ -93,11 +104,30 @@ public class PlayerService {
         List<Player> allPlayers = playerRepository.findAll();
         List<WeekOfLines> allWeeksOfLines = weeklyLinesRepository.findAll();
         allPlayers.forEach(player -> {
-            if (player.getAllPicks().size() < weekNumber) {
-                player.getAllPicks().add(new WeekOfPicks(weekNumber));
-            }
             player.calculateSeasonScore(allWeeksOfLines);
         });
         playerRepository.saveAll(allPlayers);
+    }
+
+    public boolean authenticate(String loginToken, String username) {
+        if (loginToken == null || username == null) {
+            return false;
+        }
+        Optional<Player> playerOptional = playerRepository.findByLoginToken(loginToken);
+        if (playerOptional.isPresent()) {
+            Player player = playerOptional.get();
+            // the loginToken presented matches the username they are authenticating for
+            return player.getUsername().equals(username);
+        }
+        // invalid loginToken was presented
+        return false;
+    }
+
+    public void addNewEmptyWeekOfPicks(int weekNumber) {
+        List<Player> allPlayers = playerRepository.findAll();
+        allPlayers.forEach(player -> {
+            player.getAllPicks().add(new WeekOfPicks(weekNumber));
+            playerRepository.save(player);
+        });
     }
 }

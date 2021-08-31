@@ -21,10 +21,26 @@ public class AdminController {
     private final PlayerService playerService;
     private final WeeklyLinesService weeklyLinesService;
 
+    @GetMapping("/authenticate")
+    public ResponseEntity<Boolean> authenticate(@RequestHeader("Login-Token") String loginToken) {
+        try {
+            boolean isAdminLoginToken = playerService.authenticate(loginToken, "admin");
+            return new ResponseEntity<>(isAdminLoginToken, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/postLines/{weekNumber}")
-    public ResponseEntity<WeekOfLines> addWeekOfLines(@RequestBody WeekOfLines weekOfLines,
+    public ResponseEntity<WeekOfLines> addWeekOfLines(@RequestHeader("Login-Token") String loginToken,
+                                                      @RequestBody WeekOfLines weekOfLines,
                                                       @PathVariable("weekNumber") int weekNumber) {
         try {
+            boolean isAdminLoginToken = playerService.authenticate(loginToken, "admin");
+            if (!isAdminLoginToken) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            playerService.addNewEmptyWeekOfPicks(weekNumber);
             WeekOfLines postedWeekOfLines = weeklyLinesService.addWeekOfLines(weekOfLines, weekNumber);
             return new ResponseEntity<>(postedWeekOfLines, HttpStatus.OK);
         } catch (Exception e) {
@@ -33,9 +49,14 @@ public class AdminController {
     }
 
     @PutMapping("scoreGamesAndPicks/{weekNumber}")
-    public ResponseEntity<WeekOfLines> scoreWeekOfLinesAndPicks(@RequestBody List<ScoreUpdate> scoreUpdates,
+    public ResponseEntity<WeekOfLines> scoreWeekOfLinesAndPicks(@RequestHeader("Login-Token") String loginToken,
+                                                                @RequestBody List<ScoreUpdate> scoreUpdates,
                                                                 @PathVariable("weekNumber") int weekNumber) {
         try {
+            boolean isAdminLoginToken = playerService.authenticate(loginToken, "admin");
+            if (!isAdminLoginToken) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             WeekOfLines weekOfLines = weeklyLinesService.scoreWeekOfLines(scoreUpdates, weekNumber);
             playerService.scoreAllPicks(weekNumber);
             return new ResponseEntity<>(weekOfLines, HttpStatus.OK);

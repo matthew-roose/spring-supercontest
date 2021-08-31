@@ -10,7 +10,7 @@ public class GameLine {
     private Team homeTeam;
     private Team awayTeam;
     private float homeTeamHandicap; // positive if underdog, negative if favored
-    private String gameTime; // will parse and use as Date where we allow picks to be submitted
+    private long gameTime; // will compare to Instant.now().toEpochMilli()
 
     // After the game
     private Integer homeTeamScore; // null until initialized after the game

@@ -14,7 +14,7 @@ public class LeaderboardService {
 
     private final PlayerRepository playerRepository;
 
-    public List<Player> getOverallLeaderboard() {
+    public List<Player> getSeasonLeaderboard() {
         return playerRepository.findAllOrderBySeasonScore();
     }
 
