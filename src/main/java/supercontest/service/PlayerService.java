@@ -60,6 +60,9 @@ public class PlayerService {
     }
 
     public Player submitPicks(String loginToken, WeekOfPicks weekOfPicks) {
+        if (weekOfPicks.getPicks().size() > 5) {
+            return null;
+        }
         Optional<Player> playerOptional = playerRepository.findByLoginToken(loginToken);
         if (playerOptional.isPresent()) {
             Player player = playerOptional.get();
