@@ -161,4 +161,9 @@ public class ClientController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/healthCheck")
+    public ResponseEntity<String> reportHealthy() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
