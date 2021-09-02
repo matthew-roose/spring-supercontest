@@ -17,7 +17,7 @@ import javax.ws.rs.QueryParam;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin
 @RequestMapping("/")
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class ClientController {
