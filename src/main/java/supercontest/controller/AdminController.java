@@ -24,7 +24,7 @@ public class AdminController {
     @GetMapping("/authenticate")
     public ResponseEntity<Boolean> authenticate(@RequestHeader("Login-Token") String loginToken) {
         try {
-            boolean isAdminLoginToken = playerService.authenticate(loginToken, "admin");
+            boolean isAdminLoginToken = playerService.authenticate(loginToken, "mattyiceeee");
             return new ResponseEntity<>(isAdminLoginToken, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -36,7 +36,7 @@ public class AdminController {
                                                       @RequestBody WeekOfLines weekOfLines,
                                                       @PathVariable("weekNumber") int weekNumber) {
         try {
-            boolean isAdminLoginToken = playerService.authenticate(loginToken, "admin");
+            boolean isAdminLoginToken = playerService.authenticate(loginToken, "mattyiceeee");
             if (!isAdminLoginToken) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -53,7 +53,7 @@ public class AdminController {
                                                                 @RequestBody List<ScoreUpdate> scoreUpdates,
                                                                 @PathVariable("weekNumber") int weekNumber) {
         try {
-            boolean isAdminLoginToken = playerService.authenticate(loginToken, "admin");
+            boolean isAdminLoginToken = playerService.authenticate(loginToken, "mattyiceeee");
             if (!isAdminLoginToken) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
