@@ -14,6 +14,7 @@ import supercontest.service.PlayerService;
 import supercontest.service.WeeklyLinesService;
 
 import javax.ws.rs.QueryParam;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -105,7 +106,7 @@ public class ClientController {
                 if (!loginTokenMatchesUsername) {
                     // clean picks that haven't been graded yet
                     weekOfPicks.getPicks().forEach(pick -> {
-                        if (pick.getResult() == null) {
+                        if (Long.parseLong(pick.getGameTime()) > Instant.now().toEpochMilli()) {
                             pick.setGameId(0);
                             pick.setPickedTeam(null);
                             pick.setHomeTeam(null);
