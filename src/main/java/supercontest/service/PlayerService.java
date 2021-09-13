@@ -103,7 +103,7 @@ public class PlayerService {
         }
     }
 
-    public void scoreAllPicks(int weekNumber) {
+    public void scoreAllPicks() {
         List<Player> allPlayers = playerRepository.findAll();
         List<WeekOfLines> allWeeksOfLines = weeklyLinesRepository.findAll();
         allPlayers.forEach(player -> {
@@ -130,7 +130,7 @@ public class PlayerService {
         List<Player> allPlayers = playerRepository.findAll();
         allPlayers.forEach(player -> {
             player.getAllPicks().add(new WeekOfPicks(weekNumber));
-            playerRepository.save(player);
         });
+        playerRepository.saveAll(allPlayers);
     }
 }

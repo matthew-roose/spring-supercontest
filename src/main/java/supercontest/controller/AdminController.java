@@ -58,7 +58,7 @@ public class AdminController {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             WeekOfLines weekOfLines = weeklyLinesService.scoreWeekOfLines(scoreUpdates, weekNumber);
-            playerService.scoreAllPicks(weekNumber);
+            playerService.scoreAllPicks();
             return new ResponseEntity<>(weekOfLines, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
