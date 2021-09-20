@@ -68,7 +68,8 @@ public class PlayerService {
             Player player = playerOptional.get();
             int weekNumberIndex = weekOfPicks.getWeekNumber() - 1;
             List<Pick> currentListOfPicks = player.getAllPicks().get(weekNumberIndex).getPicks();
-            List<GameLine> officialGameLines = weeklyLinesRepository.findAll().get(weekNumberIndex).getLinesOfTheWeek();
+            WeekOfLines currentWeekOfLines = weeklyLinesRepository.findAll().get(weekNumberIndex);
+            List<GameLine> officialGameLines = currentWeekOfLines.getLinesOfTheWeek();
             for (Pick pick : weekOfPicks.getPicks()) {
                 long gameTime = officialGameLines.get(pick.getGameId() - 1).getGameTime();
                 // don't submit picks if any pick is expired AND NOT already submitted
@@ -78,6 +79,7 @@ public class PlayerService {
                     return null;
                 }
             }
+            weekOfPicks.calculateWeeklyScore(currentWeekOfLines);
             List<WeekOfPicks> allPicks = player.getAllPicks();
             allPicks.set(weekNumberIndex, weekOfPicks);
             return playerRepository.save(player);
